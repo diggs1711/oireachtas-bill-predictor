@@ -1,10 +1,13 @@
-import BillList from "../components/bill-list/bill-list";
+import BillList from "../components/Bill/List/list";
+import Header from "../components/Header";
+import { Paper } from "@material-ui/core";
 
 export default function Home({ bills }) {
   return (
-    <div>
+    <Paper>
+      <Header />
       <BillList bills={bills} />
-    </div>
+    </Paper>
   );
 }
 
@@ -23,6 +26,7 @@ const limit = 20;
 
 const parse = (data) => {
   let result = [];
+
   for (let { bill } of data.results) {
     if (bill.longTitleEn) {
       result.push({
@@ -32,7 +36,28 @@ const parse = (data) => {
         debates: bill.debates.length,
         events: bill.events.length,
         longTitle: bill.longTitleEn,
+        shortTitle: bill.shortTitleEn,
         originHouse: bill.originHouse.showAs,
+        ammendments: bill.amendmentLists.length,
+        stages: bill.stages.length,
+        mostRecentStage: bill.mostRecentStage.event.chamber
+          ? {
+              chamber: bill.mostRecentStage.event.chamber.chamberCode,
+              numDates: bill.mostRecentStage.event.dates.length,
+              progress: bill.mostRecentStage.event.progressStage,
+            }
+          : null,
+        versions: bill.versions.length,
+        sponsoredBy: bill.sponsors
+          ? bill.sponsors.map((sponsorItem) => sponsorItem.sponsor.by)
+          : null,
+        sponsoredAs: bill.sponsors
+          ? bill.sponsors.map((sponsorItem) => sponsorItem.sponsor.as)
+          : null,
+        image:
+          bill.originHouse.showAs === "Seanad Éireann"
+            ? "/seanad.jpeg"
+            : "/dail.png",
         outcome: status,
       });
     }
